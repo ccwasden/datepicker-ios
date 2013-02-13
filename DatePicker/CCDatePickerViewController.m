@@ -67,8 +67,32 @@
     [self configureButtonAppearances];
     if(_allowClearDate) [self showClearButton];
     else [self hideClearButton];
+    [self addSwipeGestures];
     
     self.okBtn.enabled = [self shouldOkBeEnabled];
+}
+
+
+-(void)addSwipeGestures{
+    UISwipeGestureRecognizer *swipeGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipeGesture:)];
+    swipeGesture.direction = UISwipeGestureRecognizerDirectionUp;
+    [self.calendarDaysView addGestureRecognizer:swipeGesture];
+    
+    UISwipeGestureRecognizer *swipeGesture2 = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(handleSwipeGesture:)];
+    swipeGesture2.direction = UISwipeGestureRecognizerDirectionDown;
+    [self.calendarDaysView addGestureRecognizer:swipeGesture2];
+}
+
+-(void)handleSwipeGesture:(UISwipeGestureRecognizer *)sender{
+    //Gesture detect - swipe up/down , can be recognized direction
+    if(sender.direction == UISwipeGestureRecognizerDirectionUp){
+        [self incrementMonth:1];
+        [self slideTransitionViewInDirection:1];
+    }
+    else if(sender.direction == UISwipeGestureRecognizerDirectionDown){
+        [self incrementMonth:-1];
+        [self slideTransitionViewInDirection:-1];
+    }
 }
 
 -(void)configureButtonAppearances {
@@ -281,6 +305,7 @@
     UIView *oldView = self.calendarDaysView;
     UIView *newView = self.calendarDaysView = [[UIView alloc] initWithFrame:inStartFrame];
     [self.view addSubview:newView];
+    [self addSwipeGestures];
     newView.alpha = 0;
     [self redraw];
     [UIView animateWithDuration:.1 animations:^{
