@@ -56,7 +56,10 @@
     self.datePicker.delegate = self;
     [self.datePicker setAllowClearDate:YES];
     [self.datePicker setDateHasItemsCallback:^BOOL(NSDate *date) {
-        return YES;
+        int tmp = (arc4random() % 30)+1;
+        if(tmp % 5 == 0)
+            return YES;
+        return NO;
     }];
     [self.datePicker slideUpInView:self.navigationController.view withModalColor:[UIColor lightGrayColor]];
 }
