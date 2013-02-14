@@ -29,6 +29,7 @@
 @property (weak, nonatomic) IBOutlet UIButton *clearBtn;
 @property (weak, nonatomic) IBOutlet UIButton *okBtn;
 @property (strong, nonatomic) IBOutlet UIView *calendarDaysView;
+@property (weak, nonatomic) IBOutlet UIView *weekdaysView;
 
 - (IBAction)nextMonthPressed:(id)sender;
 - (IBAction)prevMonthPressed:(id)sender;
@@ -160,6 +161,7 @@
     int curY = (areaHeight - cellHeight*_weeksOnCalendar)/2;
     int origX = (areaWidth - cellWidth*7)/2;
     int curX = origX;
+    [self redrawWeekdays:cellWidth];
     for(int i = 0; i < days; i++){
         // @beginning
         if(i && !(i%7)) {
@@ -187,6 +189,30 @@
         // @end
         date = [_calendar dateByAddingComponents:offsetComponents toDate:date options:0];
         curX += cellWidth;
+    }
+}
+
+-(void)redrawWeekdays:(int)dayWidth{
+    if(!self.weekdaysView.subviews.count) {
+        CGSize fullSize = self.weekdaysView.frame.size;
+        int curX = (fullSize.width - 7*dayWidth)/2;
+        NSDateComponents * comps = [_calendar components:NSDayCalendarUnit fromDate:[NSDate date]];
+        [comps setDay:0];
+        NSDateFormatter *df = [[NSDateFormatter alloc] init];
+        NSDateComponents *offsetComponents = [[NSDateComponents alloc] init];
+        [offsetComponents setDay:1];
+        [df setDateFormat:@"EE"];
+        NSDate * date = [_calendar dateFromComponents:comps];
+        for(int i = 0; i < 7; i++){
+            UILabel * dayLabel = [[UILabel alloc] initWithFrame:CGRectMake(curX, 0, dayWidth, fullSize.height)];
+            dayLabel.textAlignment = NSTextAlignmentCenter;
+            dayLabel.font = [UIFont systemFontOfSize:12];
+            [self.weekdaysView addSubview:dayLabel];
+            dayLabel.text = [df stringFromDate:date];
+            dayLabel.textColor = [UIColor grayColor];
+            date = [_calendar dateByAddingComponents:offsetComponents toDate:date options:0];
+            curX+=dayWidth;
+        }
     }
 }
 
